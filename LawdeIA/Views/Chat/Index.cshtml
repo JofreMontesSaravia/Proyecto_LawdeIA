@@ -8,783 +8,90 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
+    <!-- Se mantiene Font Awesome para otros íconos como el de enviar -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --color-primary: #ffffff;
-            --color-secondary: #1a1a1a;
-            --color-accent: #334155;
-            --color-border: #374151;
-            --color-text: #ffffff;
-            --color-text-light: #9ca3af;
-            --color-ai-bubble: #1f2937;
-            --color-user-bubble: #2563eb;
-            --color-sidebar: #111827;
-            --color-background: #0f0f0f;
-            --color-input-bg: #1f2937;
-            --surface-l1: #1a1a1a;
-            --color-success: #10b981;
-            --color-danger: #ef4444;
-            --color-warning: #f59e0b;
-        }
-
-        [data-theme="light"] {
-            --color-primary: #1a1a1a;
-            --color-secondary: #f8f9fa;
-            --color-accent: #334155;
-            --color-border: #e5e7eb;
-            --color-text: #1a1a1a;
-            --color-text-light: #6b7280;
-            --color-ai-bubble: #f3f4f6;
-            --color-user-bubble: #2563eb;
-            --color-sidebar: #ffffff;
-            --color-background: #f9fafb;
-            --color-input-bg: #ffffff;
-            --surface-l1: #ffffff;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--color-background);
-            color: var(--color-text);
-            height: 100vh;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .chat-app-container {
-            display: flex;
-            height: 100vh;
-            background: var(--color-background);
-        }
-
-        /* Sidebar Styles */
-        .chat-sidebar {
-            width: 320px;
-            background: var(--color-sidebar);
-            border-right: 1px solid var(--color-border);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--color-border);
-            background: var(--color-sidebar);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .brand-logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .theme-toggle {
-            background: transparent;
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            color: var(--color-text);
-            cursor: pointer;
-            padding: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-            .theme-toggle:hover {
-                background: var(--color-secondary);
-                transform: rotate(15deg);
-            }
-
-        .new-chat-btn {
-            width: calc(100% - 3rem);
-            margin: 1rem 1.5rem;
-            padding: 0.875rem 1rem;
-            background: var(--color-user-bubble);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-            .new-chat-btn:hover {
-                opacity: 0.9;
-                transform: translateY(-1px);
-            }
-
-        .conversations-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 1rem;
-        }
-
-        .conv-item {
-            padding: 0.875rem 1rem;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 0.5rem;
-            border: 1px solid transparent;
-            color: var(--color-text);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-            .conv-item:hover {
-                background: var(--color-secondary);
-                border-color: var(--color-border);
-            }
-
-            .conv-item.active {
-                background: var(--color-secondary);
-                border-color: var(--color-user-bubble);
-                font-weight: 600;
-            }
-
-        .conv-title {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 0.9rem;
-        }
-
-        .delete-conv {
-            opacity: 0;
-            transition: opacity 0.2s;
-            background: none;
-            border: none;
-            color: var(--color-text-light);
-            cursor: pointer;
-            font-size: 1.1rem;
-            padding: 0.25rem;
-        }
-
-        .conv-item:hover .delete-conv {
-            opacity: 1;
-        }
-
-        .delete-conv:hover {
-            color: var(--color-danger);
-        }
-
-        /* Documents Section */
-        .documents-section {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--color-border);
-            border-bottom: 1px solid var(--color-border);
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .section-title {
-            font-weight: 600;
-            color: var(--color-text);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .upload-doc-btn {
-            background: var(--color-success);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-            .upload-doc-btn:hover {
-                opacity: 0.9;
-            }
-
-        .documents-list {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .document-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            border: 1px solid transparent;
-        }
-
-            .document-item:hover {
-                background-color: var(--color-secondary);
-            }
-
-            .document-item.selected {
-                background-color: var(--color-secondary);
-                border-color: var(--color-user-bubble);
-            }
-
-        .doc-icon {
-            color: var(--color-text-light);
-            font-size: 0.9rem;
-        }
-
-        .doc-title {
-            flex: 1;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .doc-actions {
-            display: flex;
-            gap: 0.25rem;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .document-item:hover .doc-actions {
-            opacity: 1;
-        }
-
-        .btn-doc-action {
-            background: none;
-            border: none;
-            color: var(--color-text-light);
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-            .btn-doc-action:hover {
-                background: var(--color-background);
-            }
-
-        .btn-delete:hover {
-            color: var(--color-danger);
-        }
-
-        /* Sidebar Footer */
-        .sidebar-footer {
-            padding: 1.5rem;
-            background: var(--color-sidebar);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--color-user-bubble);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .user-details {
-            flex: 1;
-        }
-
-        .user-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .user-email {
-            font-size: 0.8rem;
-            color: var(--color-text-light);
-        }
-
-        .logout-btn {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: transparent;
-            color: var(--color-text);
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-            .logout-btn:hover {
-                background: var(--color-secondary);
-                border-color: var(--color-danger);
-                color: var(--color-danger);
-            }
-
-        /* Main Chat Area */
-        .chat-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .chat-header {
-            padding: 1.25rem 2rem;
-            border-bottom: 1px solid var(--color-border);
-            background: var(--color-background);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .chat-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--color-primary);
-        }
-
-        .chat-actions {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-
-        .selected-document {
-            font-size: 0.875rem;
-            color: var(--color-text-light);
-            background: var(--color-secondary);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-clear-doc {
-            background: none;
-            border: none;
-            color: var(--color-text-light);
-            cursor: pointer;
-            padding: 0.25rem;
-        }
-
-            .btn-clear-doc:hover {
-                color: var(--color-danger);
-            }
-
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem;
-            background: var(--color-background);
-        }
-
-        .message {
-            display: flex;
-            margin-bottom: 1.5rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: fadeInUp 0.3s ease;
-        }
-
-        .user {
-            justify-content: flex-end;
-        }
-
-        .ai {
-            justify-content: flex-start;
-        }
-
-        .system {
-            justify-content: center;
-        }
-
-        .bubble {
-            max-width: 85%;
-            padding: 1rem 1.25rem;
-            border-radius: 1rem;
-            line-height: 1.5;
-            font-size: 0.95rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .user .bubble {
-            background: var(--color-user-bubble);
-            color: white;
-        }
-
-        .ai .bubble {
-            background: var(--color-ai-bubble);
-            color: var(--color-text);
-            border: 1px solid var(--color-border);
-        }
-
-        .system .bubble {
-            background: var(--color-warning);
-            color: #000;
-            font-size: 0.875rem;
-            text-align: center;
-        }
-
-        .message-time {
-            font-size: 0.75rem;
-            color: var(--color-text-light);
-            margin-top: 0.5rem;
-            text-align: right;
-        }
-
-        .ai .message-time {
-            text-align: left;
-        }
-
-        /* Input Area */
-        .input-area {
-            padding: 1.5rem 2rem;
-            background: var(--color-background);
-            border-top: 1px solid var(--color-border);
-        }
-
-        .input-container {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-end;
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        #message-input {
-            flex: 1;
-            resize: none;
-            border: 1px solid var(--color-border);
-            border-radius: 1rem;
-            padding: 1rem 4rem 1rem 1.5rem;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            font-family: inherit;
-            background: var(--color-input-bg);
-            color: var(--color-text);
-            max-height: 120px;
-            transition: all 0.3s ease;
-        }
-
-            #message-input:focus {
-                outline: none;
-                border-color: var(--color-user-bubble);
-                box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-            }
-
-        .input-actions {
-            position: absolute;
-            left: 1rem;
-            bottom: 0.7rem;
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-attach {
-            background: none;
-            border: none;
-            color: var(--color-text-light);
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-
-            .btn-attach:hover {
-                color: var(--color-primary);
-                background: var(--color-secondary);
-            }
-
-        .send-btn {
-            position: absolute;
-            right: 1rem;
-            bottom: 0.7rem;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--color-user-bubble);
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-            .send-btn:hover {
-                transform: scale(1.1);
-                opacity: 0.9;
-            }
-
-            .send-btn:disabled {
-                background: var(--color-text-light);
-                cursor: not-allowed;
-                transform: none;
-            }
-
-        .disclaimer {
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--color-text-light);
-            margin-top: 0.75rem;
-        }
-
-        /* File Preview */
-        .file-preview {
-            background: var(--color-secondary);
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            padding: 0.75rem;
-            margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .file-info {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-remove-file {
-            background: none;
-            border: none;
-            color: var(--color-danger);
-            cursor: pointer;
-            padding: 0.25rem;
-        }
-
-        /* Typing Indicator */
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem 1.25rem;
-            color: var(--color-text-light);
-            font-size: 0.875rem;
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 0.25rem;
-        }
-
-        .typing-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--color-text-light);
-            animation: typing 1.4s infinite;
-        }
-
-            .typing-dot:nth-child(2) {
-                animation-delay: 0.2s;
-            }
-
-            .typing-dot:nth-child(3) {
-                animation-delay: 0.4s;
-            }
-
-        /* Empty States */
-        .empty-chat {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--color-text-light);
-        }
-
-            .empty-chat h3 {
-                margin: 0 0 10px 0;
-                color: var(--color-text);
-                font-weight: 600;
-            }
-
-            .empty-chat p {
-                margin: 0;
-                font-size: 0.95em;
-            }
-
-        /* Animations */
-        @@keyframes typing {
-            0%, 100% {
-                transform: translateY(0);
-                opacity: 0.4;
-            }
-
-            50% {
-                transform: translateY(-5px);
-                opacity: 1;
-            }
-        }
-
-        @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
-        @@media (max-width: 768px) {
-            .chat-sidebar {
-                position: fixed;
-                left: -100%;
-                top: 0;
-                height: 100%;
-                z-index: 1000;
-                width: 280px;
-            }
-
-                .chat-sidebar.active {
-                    left: 0;
-                }
-
-            .chat-header {
-                padding: 1rem;
-            }
-
-            .messages-container, .input-area {
-                padding: 1rem;
-            }
-
-            .selected-document {
-                display: none;
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--color-background);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--color-border);
-            border-radius: 3px;
-        }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: var(--color-text-light);
-            }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="~/css/Chat.css" rel="stylesheet">
 </head>
 <body>
-    <div class="chat-app-container">
-        <div class="chat-sidebar" id="sidebar">
+    <!-- Definición del SVG del símbolo de Grok (círculo con barra) -->
+    <svg style="display:none;">
+        <symbol id="grok-symbol" viewBox="0 0 512 512">
+            <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 464c-114.9 0-208-93.1-208-208S141.1 48 256 48s208 93.1 208 208S370.9 464 256 464zM256 128c-70.7 0-128 57.3-128 128s57.3 128 128 128s128-57.3 128-128S326.7 128 256 128zM256 336c-44.2 0-80-35.8-80-80s35.8-80 80-80s80 35.8 80 80S300.2 336 256 336zM256 288c17.7 0 32-14.3 32-32s-14.3-32-32-32s-32 14.3-32 32s14.3 32 32 32z" />
+        </symbol>
+    </svg>
+
+    <div class="chat-app">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
             <div class="sidebar-header">
-                <div class="brand-logo"><i class="fas fa-scale-balanced"></i> LawdeIA</div>
-                <button id="theme-toggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
-            </div>
-
-            <button id="new-chat-btn" class="new-chat-btn"><i class="fas fa-plus"></i> Nueva Consulta</button>
-
-            <div id="conversations-sidebar" class="conversations-list"></div>
-
-            <div class="documents-section">
-                <div class="section-header">
-                    <div class="section-title"><i class="fas fa-folder"></i> Documentos</div>
-                    <button id="upload-doc-btn" class="upload-doc-btn" title="Subir documento"><i class="fas fa-plus"></i></button>
+                <!-- Uso del SVG para el logo -->
+                <div class="logo">
+                    <svg class="grok-symbol"><use href="#grok-symbol" /></svg>
+                    LawdeIA
                 </div>
-                <div id="documents-list" class="documents-list"></div>
             </div>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
+            <button id="new-chat-btn" class="new-chat"><i class="fas fa-plus"></i> Nueva consulta</button>
+            <div id="conversations-sidebar" style="flex:1;overflow-y:auto;padding:0 1rem;">
+                <!-- Aquí irían las conversaciones -->
+            </div>
+            <!-- USER INFO AREA (Refactorizado) -->
+            <div class="user-info-area">
+                <div class="user-profile">
                     <div class="user-avatar" id="user-avatar">U</div>
                     <div class="user-details">
-                        <div class="user-name" id="user-name">Usuario</div>
-                        <div class="user-email" id="user-email">usuario@ejemplo.com</div>
+                        <div id="user-name">Usuario</div>
+                        <small id="user-email">usuario@ejemplo.com</small>
                     </div>
                 </div>
-                <form asp-controller="Auth" asp-action="Logout" method="post" style="display:inline;">
-                    <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+                <form asp-controller="Auth" asp-action="Logout" method="post">
+                    <button type="submit" class="logout-button">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                    </button>
                 </form>
             </div>
         </div>
 
-        <div class="chat-main">
-            <div class="chat-header">
-                <div class="chat-title" id="chat-title">Nueva Consulta</div>
-                <div class="chat-actions">
-                    <div id="selected-document" class="selected-document" style="display: none;">
-                        <i class="fas fa-file"></i>
-                        <span id="selected-doc-name"></span>
-                        <button id="clear-doc-btn" class="btn-clear-doc"><i class="fas fa-times"></i></button>
+        <!-- MAIN -->
+        <div class="main">
+            <div id="messages" class="messages">
+                <div class="empty-state">
+                    <div class="logo-container">
+                        <div class="grok-logo">
+                            <!-- Uso del SVG para el logo grande -->
+                            <svg class="grok-symbol"><use href="#grok-symbol" /></svg>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <div id="messages" class="messages-container">
-                <div class="empty-chat">
-                    <h3>Bienvenido a LawdeIA</h3>
-                    <p>Selecciona un documento y comienza tu consulta legal.</p>
+                    <!-- Se elimina el logo repetido aquí -->
+                    <h1>LawdeIA</h1>
+                    <p>Soy LawdeIA, tu asistente legal basado en IA. Pregúntame cualquier cosa sobre leyes, jurisprudencia o normativas.</p>
                 </div>
             </div>
 
             <div class="input-area">
-                <div class="input-container">
-                    <div class="input-actions">
-                        <input type="file" id="file-input" hidden accept=".txt,.md,.pdf,.jpg,.jpeg,.png">
-                        <button id="upload-btn" class="btn-attach" title="Adjuntar documento"><i class="fas fa-paperclip"></i></button>
-                    </div>
-                    <input type="text" id="message-input" placeholder="Escribe tu consulta legal..." autocomplete="off">
-                    <button id="send-btn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                <div class="input-wrapper">
+                    <textarea id="message-input" placeholder="Escribe tu consulta..." rows="1"></textarea>
+                    <button id="send-btn" class="send-button">
+                        <!-- Se mantiene el ícono de Font Awesome para enviar -->
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
                 </div>
-                <div class="disclaimer">Información generada por IA. Verificar fuentes.</div>
+                <div style="text-align:center;margin-top:0.75rem;font-size:0.8rem;color:var(--text-muted);">
+                    La información es generada por IA. Verifica siempre las fuentes.
+                </div>
             </div>
         </div>
     </div>
 
+    <script>
+        // Script para auto-ajustar la altura del textarea
+        const textarea = document.getElementById('message-input');
+        textarea.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    </script>
+    <!-- Se mantiene el script original del usuario -->
     <script src="~/js/chatcode.js" asp-append-version="true"></script>
 </body>
 </html>

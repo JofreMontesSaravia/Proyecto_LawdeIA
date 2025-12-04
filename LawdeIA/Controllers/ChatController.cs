@@ -1,4 +1,5 @@
 ﻿using LawdeIA.Data;
+using LawdeIA.Data;
 using LawdeIA.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
